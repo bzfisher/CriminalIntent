@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,13 +24,10 @@ import java.util.UUID;
 public class CrimeFragment extends Fragment {
     public static final String EXTRA_CRIME_ID = "com.insertjokes.criminalintent.criminalintent.crime_id";
     public static final String DIALOG_DATE = "date";
-    public static final String DIALOG_TIME = "time";
     private static final int REQUEST_DATE = 0;
-    private static final int REQUEST_TIME = 1;
     private Crime mCrime;
     private EditText mTitleField;
     private Button mDateButton;
-    private Button mTimeButton;
     private CheckBox mSolvedCheckBox;
 
 
@@ -77,17 +72,6 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        mTimeButton = (Button)v.findViewById(R.id.crime_time);
-        mTimeButton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               FragmentManager fm = getActivity().getSupportFragmentManager();
-               PickerDialogFragment dialog = PickerDialogFragment.newInstance(mCrime.getDate());
-               dialog.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
-               dialog.show(fm,DIALOG_TIME);
-           }
-       });
-
         mSolvedCheckBox = (CheckBox) v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
         mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -118,43 +102,8 @@ public class CrimeFragment extends Fragment {
         }
         if (requestCode == REQUEST_DATE)
         {
-            Log.d(CrimeFragment.class.toString(), "got a new date!");
-            Date newDate = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            Date previousDate = mCrime.getDate();
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(newDate);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH);
-            int year = calendar.get(Calendar.YEAR);
-
-            calendar.setTime(previousDate);
-
-            calendar.set(Calendar.DAY_OF_MONTH, day);
-            calendar.set(Calendar.MONTH, month);
-            calendar.set(Calendar.YEAR, year);
-
-            mCrime.setDate(calendar.getTime());
-            updateDate();
-        }
-        if (requestCode == REQUEST_TIME)
-        {
-            Date newDate = (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
-            Date previousDate = mCrime.getDate();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(previousDate);
-
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH);
-            int year = calendar.get(Calendar.YEAR);
-
-            calendar.setTime(newDate);
-
-            calendar.set(Calendar.DAY_OF_MONTH, day);
-            calendar.set(Calendar.MONTH, month);
-            calendar.set(Calendar.YEAR, year);
-
-            mCrime.setDate(calendar.getTime());
+            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            mCrime.setDate(date);
             updateDate();
         }
     }
